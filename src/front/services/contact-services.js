@@ -20,14 +20,24 @@ export const getAgenda = async () => {
   try {
     const response = await fetch(uri, options);
     if (response.status === 404) {
-      return postUser();
-    } else if (!response.ok) {
+      await postUser();
+      const secondResponse = await fetch(uri, options);
+      if (!secondResponse.ok) {
+        console.error("Error getting agenda");
+        return [];
+      }
+      const secondAgendaData = await secondResponse.json();
+      return secondAgendaData.contacts;
+    }
+    if (!response.ok) {
       console.log(response.status, " error");
+      return [];
     }
     const agendaData = await response.json();
     return agendaData.contacts;
   } catch {
     console.error("Error getting agenda");
+    return [];
   }
 };
 
@@ -43,6 +53,7 @@ export const postContact = async (newContact) => {
     if (!response.ok) {
       console.log(response.status, " error");
     }
+    return await getAgenda();
   }
   catch {
     console.error("Error posting contact");

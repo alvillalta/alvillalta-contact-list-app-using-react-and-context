@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
@@ -9,7 +9,8 @@ import { postContact } from "../services/contact-services.js"
 export const AddContact = () => {
 
     const navigate = useNavigate();
-    const { store, dispatch } = useGlobalReducer();
+
+    const { dispatch } = useGlobalReducer();
 
     // Local state variables
     const [name, setName] = useState("");
@@ -31,7 +32,11 @@ export const AddContact = () => {
             "phone": phone,
             "address": address
         }
-        await postContact(newContact);
+        const contacts = await postContact(newContact);
+        dispatch({
+            type: "GET-AGENDA",
+            payload: contacts
+        });
         navigate("/contacts");
     }
 
